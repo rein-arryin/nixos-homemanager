@@ -1,30 +1,33 @@
-{ config, inputs, pkgs, pkgs-stable, ... }:
+{ config, lib, inputs, pkgs, pkgs-stable, ... }:
 
 {
-  imports = [
-    inputs.zen-browser.homeModules.beta
-   ]; 
-
   home.username = "neo";
   home.homeDirectory = "/home/neo";
   home.stateVersion = "25.11"; 
   home.packages = with pkgs; [
-    inputs.helium.packages.${pkgs.system}.helium
     ani-cli
+    nh
+    gh
+    git
+    yazi
+    mrpack-install
+    #pcsx2
+    lutris
+    protonup-qt
+
+    # Terminal
     btop
     figlet
     cava
     cmatrix
-    gh
-    git
-    yazi
-    zed-editor
+    tty-clock
 
     # Environtment
-    gcc
-    gdb
+    wlopm
+
 
     # Apps
+    inputs.zen-browser.packages.${pkgs.stdenv.hostPlatform.system}.default
     pkgs-stable.kdePackages.gwenview
     pkgs-stable.pinta
     pkgs-stable.vesktop
@@ -32,53 +35,128 @@
     vscode
     alacritty
     tor-browser
+    android-studio
+    localsend
+    obsidian
+    amberol
+    zed-editor
+    antigravity
+    gparted
+    qdirstat
+    whatsie
 
     # Cursor
     bibata-cursors
 
+    # ScreenShot & Edit
+    grim
+    swappy
+    slurp
+    imagemagick
+
+    # Kde SHit
+    # GUI Theme Configurators
+    libsForQt5.qt5ct
+    kdePackages.qt6ct
+
+    # Kvantum Engines (Qt5 & Qt6)
+    libsForQt5.qtstyleplugin-kvantum
+    kdePackages.qtstyleplugin-kvantum
+
+    # Qt Wayland Support
+    libsForQt5.qtwayland
+    kdePackages.qtwayland
   ];
 
   home.file = {
   };
+  
+  xdg.mimeApps = {
+    enable = false;
+  };    
 
-  xdg.configFile."gtk-4.0/gtk.css".force = true;
+  # Disable KDE Plasma's GTK sync module
+xdg.configFile."kded5rc".text = ''
+  [Module-gtkconfig]
+  autoload=false
+'';
+
+xdg.configFile."kded6rc".text = ''
+  [Module-gtkconfig]
+  autoload=false
+'';
+  
+xdg.configFile."Kvantum/kvantum.kvconfig".text = ''
+    [General]
+    theme=Catppuccin-Mocha-Blue
+  '';
+
+  # 3. Tell qt5ct/qt6ct to pick Kvantum as the style
+  xdg.configFile."qt5ct/qt5ct.conf".text = ''
+    [Appearance]
+    style=kvantum
+  '';
+  xdg.configFile."qt6ct/qt6ct.conf".text = ''
+    [Appearance]
+    style=kvantum
+  '';
 
   home.sessionVariables = {
-    XCURSOR_THEME = "Bibata-Modern-Classic";
+    QT_QPA_PLATFORM = "wayland;xcb";
+    QT_WAYLAND_DISABLE_WINDOWDECORATION = "1";
+
+    XCURSOR_THEME = "Bibata-Modern-Ice";
     XCURSOR_SIZE = "24";
-    WLR_NO_HARDWARE_CURSORS = "1";    
+    WLR_NO_HARDWARE_CURSORS = "1";
+    EDITOR = "nvim";
+    TERMINAL = "alacritty";
   };
 
   home.shellAliases = {
+    vhm = "nvim ~/.config/home-manager/home.nix";
+    hms-flake = "cd ~/.config/home-manager && home-manager switch --flake . && cd -";
     z = "zeditor";
     v = "nvim";
     btw = "fastfetch";
     cx = "cmatrix";
     cv = "cava";
+    cn = "cd /etc/nixos";
+    sklauncher = "steam-run java -jar /home/neo/Minecraft/SKlauncher-3.2.18.jar";
   };  
 
   home.pointerCursor = {
+    enable = true;
     gtk.enable = true;
     x11.enable = true;
     package = pkgs.bibata-cursors; 
-    name = "Bibata-Modern-Classic";
+    name = "Bibata-Modern-Ice";
     size = 24;
    }; 
 
    gtk = {
      enable = true;
-     theme = {
-       name = "Tokyonight-Dark";
-       package = pkgs.tokyonight-gtk-theme;  
-     };
-     iconTheme = {
-       name = "Dracula";
-       package = pkgs.dracula-icon-theme;
-     };  
+     gtk2.enable = false;
+     gtk4.theme = null;
     };
 
-  programs.starship.enable = true; 
-  programs.zsh.enable = true;
-  programs.zen-browser.enable = true;
+    qt = {
+      enable = true;
+      platformTheme.name = "qtct";
+      style = {
+        name = "kvantum";
+        package = pkgs.libsForQt5.qtstyleplugin-kvantum;
+      };
+    };
+      
+  # Shell
+  programs.bash.enable = true;
+  programs.starship = {
+    enable = true;
+    enableBashIntegration = true;
+  };  
+
   programs.home-manager.enable = true;
+  programs.rmpc = {
+    enable = true;
+  };  
 }
