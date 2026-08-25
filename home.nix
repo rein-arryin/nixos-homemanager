@@ -14,6 +14,7 @@
     #pcsx2
     lutris
     protonup-qt
+    qbittorrent
 
     # Terminal
     btop
@@ -141,11 +142,6 @@ xdg.configFile."Kvantum/kvantum.kvconfig".text = ''
 
     qt = {
       enable = true;
-      platformTheme.name = "qtct";
-      style = {
-        name = "kvantum";
-        package = pkgs.libsForQt5.qtstyleplugin-kvantum;
-      };
     };
       
   # Shell
